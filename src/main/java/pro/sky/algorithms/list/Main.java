@@ -5,7 +5,7 @@ import pro.sky.algorithms.list.service.impl.StringListImpl;
 
 public class Main {
     public static void main(String[] args) {
-        StringList stringList = new StringListImpl();
+        StringList stringList = new StringListImpl(0);
         stringList.add("1");
         stringList.add("2");
         stringList.add("3");

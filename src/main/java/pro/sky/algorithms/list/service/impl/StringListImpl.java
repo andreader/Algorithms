@@ -1,16 +1,24 @@
 package pro.sky.algorithms.list.service.impl;
+
+import pro.sky.algorithms.list.exception.ArrayIsFullException;
 import pro.sky.algorithms.list.exception.NullElemException;
 import pro.sky.algorithms.list.service.StringList;
 
 import java.util.Arrays;
+
+import static pro.sky.algorithms.list.constant.Constants.DEFAULT_CAPACITY;
 
 
 public class StringListImpl implements StringList {
     private String[] array;
     private int pos;
 
-    public StringListImpl() {
-        this.array = new String[2];
+    public StringListImpl(int size) {
+        this.array = new String[size];
+    }
+
+    private void setArray(String[] newArray) {
+        this.array = newArray;
     }
 
     @Override
@@ -61,7 +69,9 @@ public class StringListImpl implements StringList {
 
     @Override
     public String add(String item) {
-        validatePos();
+        if (pos == array.length) {
+            grow();
+        }
         validateItem(item);
         array[pos++] = item;
         return item;
@@ -69,14 +79,16 @@ public class StringListImpl implements StringList {
 
     @Override
     public String add(int index, String item) {
-        validatePos();
+        if (pos == array.length) {
+            grow();
+        }
         validateIndex(index);
         validateItem(item);
         if (pos == index) {
             array[pos++] = item;
             return item;
         }
-        System.arraycopy(array, index, array, index + 1, array.length - index);
+        System.arraycopy(array, index, array, index + 1, pos - index);
         array[index] = item;
         pos++;
         return item;
@@ -114,22 +126,25 @@ public class StringListImpl implements StringList {
     }
 
 
-    private void validatePos() {
-        if (pos == array.length) {
-            grow();
-        }
-    }
-
     private void grow() {
-        this.array = Arrays.copyOf(array, array.length * 2);
+        int newLenght = array.length > 0 ? array.length * 2 : DEFAULT_CAPACITY;
+        String[] newArray = new String[newLenght];
+        System.arraycopy(array, 0, newArray, 0, array.length);
+        setArray(newArray);
     }
 
     private void validateIndex(int index) {
-        if (index < 0) {
-            throw new IndexOutOfBoundsException("Index can not be negative!");
+        if (index < 0 || index > pos) {
+            throw new IndexOutOfBoundsException();
         }
         if (index > array.length - 1) {
             grow();
+        }
+    }
+
+    private void validatePos() {
+        if (pos == array.length) {
+            throw new ArrayIsFullException("Array is full");
         }
     }
 
