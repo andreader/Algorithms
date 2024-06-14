@@ -1,16 +1,16 @@
 package pro.sky.algorithms.list.service.impl;
-import pro.sky.algorithms.list.exception.ArrayIsFullException;
 import pro.sky.algorithms.list.exception.NullElemException;
 import pro.sky.algorithms.list.service.StringList;
+
 import java.util.Arrays;
 
 
 public class StringListImpl implements StringList {
-    private final String[] array;
+    private String[] array;
     private int pos;
 
-    public StringListImpl(int size) {
-        this.array = new String[size];
+    public StringListImpl() {
+        this.array = new String[2];
     }
 
     @Override
@@ -61,8 +61,8 @@ public class StringListImpl implements StringList {
 
     @Override
     public String add(String item) {
-        validateItem(item);
         validatePos();
+        validateItem(item);
         array[pos++] = item;
         return item;
     }
@@ -76,7 +76,7 @@ public class StringListImpl implements StringList {
             array[pos++] = item;
             return item;
         }
-        System.arraycopy(array, index, array, index + 1, pos - index);
+        System.arraycopy(array, index, array, index + 1, array.length - index);
         array[index] = item;
         pos++;
         return item;
@@ -116,13 +116,20 @@ public class StringListImpl implements StringList {
 
     private void validatePos() {
         if (pos == array.length) {
-            throw new ArrayIsFullException("Array is full");
+            grow();
         }
     }
 
+    private void grow() {
+        this.array = Arrays.copyOf(array, array.length * 2);
+    }
+
     private void validateIndex(int index) {
-        if (index < 0 || index > array.length) {
-            throw new IndexOutOfBoundsException();
+        if (index < 0) {
+            throw new IndexOutOfBoundsException("Index can not be negative!");
+        }
+        if (index > array.length - 1) {
+            grow();
         }
     }
 
