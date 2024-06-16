@@ -1,24 +1,18 @@
 package pro.sky.algorithms.list.service.impl;
 
-import pro.sky.algorithms.list.exception.ArrayIsFullException;
+import pro.sky.algorithms.list.constant.Constants;
 import pro.sky.algorithms.list.exception.NullElemException;
 import pro.sky.algorithms.list.service.StringList;
 
 import java.util.Arrays;
 
-import static pro.sky.algorithms.list.constant.Constants.DEFAULT_CAPACITY;
-
 
 public class StringListImpl implements StringList {
-    private String[] array;
+    private final String[] array;
     private int pos;
 
     public StringListImpl(int size) {
         this.array = new String[size];
-    }
-
-    private void setArray(String[] newArray) {
-        this.array = newArray;
     }
 
     @Override
@@ -127,10 +121,12 @@ public class StringListImpl implements StringList {
 
 
     private void grow() {
-        int newLenght = array.length > 0 ? array.length * 2 : DEFAULT_CAPACITY;
+        int newLenght = array.length > 0 ? array.length * 2 : Constants.getDefaultCapacity();
         String[] newArray = new String[newLenght];
         System.arraycopy(array, 0, newArray, 0, array.length);
-        setArray(newArray);
+        for (int i = 0; i < array.length; i++) {
+            array[i] = newArray[i];
+        }
     }
 
     private void validateIndex(int index) {
@@ -142,11 +138,6 @@ public class StringListImpl implements StringList {
         }
     }
 
-    private void validatePos() {
-        if (pos == array.length) {
-            throw new ArrayIsFullException("Array is full");
-        }
-    }
 
     private void validateItem(String item) {
         if (item == null) {
