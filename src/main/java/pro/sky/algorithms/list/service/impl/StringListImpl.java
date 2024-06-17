@@ -6,9 +6,8 @@ import pro.sky.algorithms.list.service.StringList;
 
 import java.util.Arrays;
 
-
 public class StringListImpl implements StringList {
-    private final String[] array;
+    private String[] array;
     private int pos;
 
     public StringListImpl(int size) {
@@ -49,7 +48,7 @@ public class StringListImpl implements StringList {
     @Override
     public int lastIndexOf(String item) {
         for (int i = pos; i >= 0; i--) {
-            if (array[i].equals(item)) {
+            if (array[i] != null && array[i].equals(item)) {
                 return i;
             }
         }
@@ -115,29 +114,26 @@ public class StringListImpl implements StringList {
 
     @Override
     public boolean equals(StringList otherList) {
-        Arrays.equals(this.array, otherList.toArray());
-        return false;
+        if (this == otherList) {
+            return true;
+        }
+        if (otherList == null || getClass() != otherList.getClass()) {
+            return false;
+        }
+        StringListImpl that = (StringListImpl) otherList;
+        return Arrays.equals(this.array, that.array);
     }
 
-
     private void grow() {
-        int newLenght = array.length > 0 ? array.length * 2 : Constants.getDefaultCapacity();
-        String[] newArray = new String[newLenght];
-        System.arraycopy(array, 0, newArray, 0, array.length);
-        for (int i = 0; i < array.length; i++) {
-            array[i] = newArray[i];
-        }
+        int new_length = array.length > 0 ? array.length * 2 : Constants.getDefaultCapacity();
+        array = Arrays.copyOf(array, new_length);
     }
 
     private void validateIndex(int index) {
         if (index < 0 || index > pos) {
             throw new IndexOutOfBoundsException();
         }
-        if (index > array.length - 1) {
-            grow();
-        }
     }
-
 
     private void validateItem(String item) {
         if (item == null) {
